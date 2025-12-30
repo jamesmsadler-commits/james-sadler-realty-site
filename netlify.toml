@@ -1,0 +1,53 @@
+# Netlify Configuration for James Sadler Realty Website
+# This file defines build settings, environment variables, and deployment configuration
+
+[build]
+# Build command - creates optimized production build with Vite
+command = "pnpm build"
+
+# Directory containing the built files to deploy
+publish = "dist"
+
+# Environment during build
+environment = { NODE_VERSION = "18" }
+
+# Redirects and rewrite rules
+[[redirects]]
+# Single Page Application (SPA) routing - serve index.html for all routes
+from = "/*"
+to = "/index.html"
+status = 200
+
+# Security headers for production
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+X-XSS-Protection = "1; mode=block"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Content-Security-Policy = "default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'"
+
+# Cache policy for static assets
+[[headers]]
+for = "/dist/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+# Context-specific settings
+[context.production]
+command = "pnpm build"
+publish = "dist"
+
+# Environment variables for production
+[env.production]
+# Zapier webhook URL for lead capture
+# Set this value in Netlify dashboard: Settings → Build & deploy → Environment variables
+REACT_APP_ZAPIER_WEBHOOK_URL = ""
+
+# Preview and branch deploys get their own build configuration
+[context.deploy-preview]
+command = "pnpm build"
+
+[context.branch-deploy]
+command = "pnpm build"
